@@ -1,0 +1,110 @@
+<div class="cf-auth">
+  <div class="cf-auth-card">
+    <h1 class="cf-auth-titulo h3">Crear cuenta</h1>
+    <p class="text-secondary">Únete a la comunidad de CinemaForo.</p>
+
+    <form [formGroup]="form" (ngSubmit)="registrar()" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="nombre">Nombre de usuario</label>
+        <input
+          id="nombre"
+          type="text"
+          class="form-control"
+          formControlName="nombre"
+          placeholder="cinefilo_cl"
+        />
+        @if (form.controls.nombre.touched && form.controls.nombre.errors; as e) {
+          <div class="cf-error">
+            @if (e['required']) {
+              El nombre de usuario es obligatorio.
+            } @else if (e['minlength']) {
+              Debe tener al menos 3 caracteres.
+            } @else if (e['maxlength']) {
+              No puede superar los 20 caracteres.
+            } @else if (e['pattern']) {
+              Solo letras, números y guion bajo.
+            }
+          </div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="correo">Correo</label>
+        <input
+          id="correo"
+          type="email"
+          class="form-control"
+          formControlName="correo"
+          placeholder="tucorreo@ejemplo.cl"
+        />
+        @if (form.controls.correo.touched && form.controls.correo.errors; as e) {
+          <div class="cf-error">
+            @if (e['required']) {
+              El correo es obligatorio.
+            } @else if (e['email']) {
+              Ingresa un correo válido.
+            }
+          </div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="contrasena">Contraseña</label>
+        <input
+          id="contrasena"
+          type="password"
+          class="form-control"
+          formControlName="contrasena"
+          autocomplete="new-password"
+        />
+        <ul class="cf-reglas mt-2">
+          @for (r of reglas; track r.texto) {
+            <li [class.cumple]="r.ok">{{ r.ok ? '✓' : '○' }} {{ r.texto }}</li>
+          }
+        </ul>
+        @if (form.controls.contrasena.touched && form.controls.contrasena.errors?.['required']) {
+          <div class="cf-error">La contraseña es obligatoria.</div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="confirmar">Confirmar contraseña</label>
+        <input
+          id="confirmar"
+          type="password"
+          class="form-control"
+          formControlName="confirmar"
+          autocomplete="new-password"
+        />
+        @if (form.controls.confirmar.touched) {
+          @if (form.controls.confirmar.errors?.['required']) {
+            <div class="cf-error">Debes confirmar la contraseña.</div>
+          } @else if (form.errors?.['noCoinciden']) {
+            <div class="cf-error">Las contraseñas no coinciden.</div>
+          }
+        }
+      </div>
+
+      <div class="form-check mb-3">
+        <input id="normas" type="checkbox" class="form-check-input" formControlName="normas" />
+        <label class="form-check-label" for="normas">Acepto las normas del foro</label>
+        @if (form.controls.normas.touched && form.controls.normas.errors) {
+          <div class="cf-error">Debes aceptar las normas para registrarte.</div>
+        }
+      </div>
+
+      @if (error) {
+        <div class="cf-error mb-3">{{ error }}</div>
+      }
+      @if (exito) {
+        <div class="cf-ok mb-3">{{ exito }}</div>
+      }
+
+      <button type="submit" class="btn cf-btn w-100">Registrarme</button>
+    </form>
+
+    <div class="mt-3 text-center">
+      <a routerLink="/login" class="cf-enlace">¿Ya tienes cuenta? Inicia sesión</a>
+    </div>
+  </div>
+</div>

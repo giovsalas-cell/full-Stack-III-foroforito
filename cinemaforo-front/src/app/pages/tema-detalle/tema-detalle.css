@@ -1,0 +1,87 @@
+.cf-volver {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--cf-texto-suave);
+  text-decoration: none;
+}
+.cf-volver:hover {
+  color: var(--cf-texto);
+}
+
+.cf-tema {
+  display: flex;
+  gap: 1rem;
+  background: var(--cf-superficie);
+  border: 1px solid var(--cf-borde);
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+.cf-tema-titulo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0.25rem 0 0.5rem;
+}
+.cf-tema p {
+  color: var(--cf-texto-suave);
+}
+.cf-tema small {
+  color: var(--cf-texto-suave);
+}
+
+.cf-form {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+textarea.form-control {
+  background: var(--cf-superficie);
+  border: 1px solid var(--cf-borde);
+  border-radius: 12px;
+  color: var(--cf-texto);
+}
+textarea.form-control::placeholder {
+  color: var(--cf-texto-suave);
+}
+textarea.form-control:focus {
+  background: var(--cf-superficie);
+  color: var(--cf-texto);
+  border-color: var(--cf-morado);
+  box-shadow: 0 0 0 0.2rem rgba(107, 47, 240, 0.25);
+}
+
+.cf-comentario {
+  border-left: 2px solid var(--cf-borde);
+  padding: 0.5rem 0 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+}
+.cf-comentario-cabecera {
+  font-size: 0.85rem;
+  color: var(--cf-texto-suave);
+}
+.cf-comentario-cabecera strong {
+  color: var(--cf-texto);
+}
+.cf-comentario p {
+  margin: 0.25rem 0;
+}
+
+.cf-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--cf-texto-suave);
+  font-size: 0.85rem;
+}
+.cf-link:hover {
+  color: var(--cf-azul);
+}
+
+.cf-respuesta {
+  margin-top: 0.5rem;
+}
+.cf-vacio {
+  color: var(--cf-texto-suave);
+}

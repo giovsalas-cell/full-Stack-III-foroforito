@@ -1,0 +1,80 @@
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-7">
+      <a routerLink="/" class="cf-volver">← Volver al inicio</a>
+
+      @if (tema$ | async; as t) {
+        <article class="cf-tema">
+          <div class="cf-votos">
+            <button [class.activo]="miVoto() === 1" (click)="votar(1)">▲</button>
+            <span>{{ t.votos }}</span>
+            <button [class.activo-bajo]="miVoto() === -1" (click)="votar(-1)">▼</button>
+          </div>
+          <div>
+            <span class="cf-chip">{{ nombreCategoria(t.idCategoria) }}</span>
+            <h1 class="cf-tema-titulo">{{ t.titulo }}</h1>
+            <p>{{ t.contenido }}</p>
+            <small>por {{ t.autor }} · {{ t.fecha | date: 'dd/MM/yyyy HH:mm' }}</small>
+          </div>
+        </article>
+
+        <form class="cf-form" (ngSubmit)="publicar()">
+          <textarea
+            name="nuevoComentario"
+            class="form-control"
+            rows="3"
+            maxlength="500"
+            required
+            placeholder="¿Qué opinas?"
+            [(ngModel)]="nuevoComentario"
+          ></textarea>
+          <button type="submit" class="btn cf-btn" [disabled]="!nuevoComentario.trim()">
+            Comentar
+          </button>
+        </form>
+
+        <h6 class="cf-panel-titulo">Comentarios</h6>
+
+        @for (c of comentarios$ | async; track c.id) {
+          <div class="cf-comentario" [style.margin-left.rem]="c.nivel * 1.5">
+            <div class="cf-comentario-cabecera">
+              <strong>{{ c.autor }}</strong> · {{ c.fecha | date: 'dd/MM/yyyy HH:mm' }}
+            </div>
+            <p>{{ c.contenido }}</p>
+            <button type="button" class="cf-link" (click)="abrirRespuesta(c.id)">Responder</button>
+
+            @if (respondiendoA === c.id) {
+              <div class="cf-respuesta">
+                <textarea
+                  name="respuesta"
+                  class="form-control"
+                  rows="2"
+                  maxlength="500"
+                  placeholder="Escribe tu respuesta"
+                  [(ngModel)]="textoRespuesta"
+                ></textarea>
+                <div class="d-flex gap-2 mt-2">
+                  <button
+                    type="button"
+                    class="btn cf-btn"
+                    [disabled]="!textoRespuesta.trim()"
+                    (click)="enviarRespuesta(c.id)"
+                  >
+                    Enviar
+                  </button>
+                  <button type="button" class="cf-link" (click)="cancelarRespuesta()">
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        } @empty {
+          <p class="cf-vacio">Aún no hay comentarios. ¡Sé el primero!</p>
+        }
+      } @else {
+        <div class="cf-panel">Este tema no existe o fue retirado por moderación.</div>
+      }
+    </div>
+  </div>
+</div>

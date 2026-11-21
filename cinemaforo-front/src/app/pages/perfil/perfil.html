@@ -1,0 +1,77 @@
+<div class="cf-auth">
+  <div class="cf-auth-card">
+    @if (usuario) {
+      <h1 class="cf-auth-titulo h3">Mi perfil</h1>
+      <span class="cf-chip">{{ usuario.rol }}</span>
+
+      <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+        <div class="mb-3">
+          <label class="form-label">Correo (no se puede cambiar)</label>
+          <input type="email" class="form-control" [value]="usuario.correo" disabled />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="nombre">Nombre de usuario</label>
+          <input id="nombre" type="text" class="form-control" formControlName="nombre" />
+          @if (form.controls.nombre.touched && form.controls.nombre.errors; as e) {
+            <div class="cf-error">
+              @if (e['required']) {
+                El nombre de usuario es obligatorio.
+              } @else if (e['minlength']) {
+                Debe tener al menos 3 caracteres.
+              } @else if (e['maxlength']) {
+                No puede superar los 20 caracteres.
+              } @else if (e['pattern']) {
+                Solo letras, números y guion bajo.
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="contrasena">Nueva contraseña (opcional)</label>
+          <input
+            id="contrasena"
+            type="password"
+            class="form-control"
+            formControlName="contrasena"
+            autocomplete="new-password"
+          />
+          @if (form.controls.contrasena.value) {
+            <ul class="cf-reglas mt-2">
+              @for (r of reglas; track r.texto) {
+                <li [class.cumple]="r.ok">{{ r.ok ? '✓' : '○' }} {{ r.texto }}</li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="confirmar">Confirmar nueva contraseña</label>
+          <input
+            id="confirmar"
+            type="password"
+            class="form-control"
+            formControlName="confirmar"
+            autocomplete="new-password"
+          />
+          @if (form.controls.confirmar.touched && form.errors?.['noCoinciden']) {
+            <div class="cf-error">Las contraseñas no coinciden.</div>
+          }
+        </div>
+
+        @if (error) {
+          <div class="cf-error mb-3">{{ error }}</div>
+        }
+        @if (exito) {
+          <div class="cf-ok mb-3">{{ exito }}</div>
+        }
+
+        <button type="submit" class="btn cf-btn w-100">Guardar cambios</button>
+      </form>
+    } @else {
+      <p>Debes iniciar sesión para ver tu perfil.</p>
+      <a routerLink="/login" class="cf-enlace">Ir al inicio de sesión</a>
+    }
+  </div>
+</div>

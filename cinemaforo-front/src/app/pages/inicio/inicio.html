@@ -1,0 +1,100 @@
+<div class="container-fluid">
+  <div class="row g-3">
+    <!-- Izquierda: categorías (tablet y escritorio) -->
+    <aside class="col-md-4 col-lg-3 d-none d-md-block">
+      <div class="cf-panel">
+        <h6 class="cf-panel-titulo">Categorías</h6>
+        <a
+          class="cf-categoria"
+          [class.activa]="(catActual$ | async) === 0"
+          routerLink="/"
+          queryParamsHandling="merge"
+          [queryParams]="{ cat: null }"
+          >Todas</a
+        >
+        @for (c of categorias; track c.id) {
+          <a
+            class="cf-categoria"
+            [class.activa]="(catActual$ | async) === c.id"
+            routerLink="/"
+            queryParamsHandling="merge"
+            [queryParams]="{ cat: c.id }"
+            >{{ c.nombre }}</a
+          >
+        }
+      </div>
+    </aside>
+
+    <!-- Centro: temas -->
+    <section class="col-12 col-md-8 col-lg-6">
+      <!-- Categorías en móvil -->
+      <div class="cf-chips d-md-none mb-3">
+        <a
+          class="cf-chip-cat"
+          [class.activa]="(catActual$ | async) === 0"
+          routerLink="/"
+          queryParamsHandling="merge"
+          [queryParams]="{ cat: null }"
+          >Todas</a
+        >
+        @for (c of categorias; track c.id) {
+          <a
+            class="cf-chip-cat"
+            [class.activa]="(catActual$ | async) === c.id"
+            routerLink="/"
+            queryParamsHandling="merge"
+            [queryParams]="{ cat: c.id }"
+            >{{ c.nombre }}</a
+          >
+        }
+      </div>
+
+      @if (textoBusqueda$ | async; as q) {
+        <p class="text-secondary">
+          Resultados para "<strong>{{ q }}</strong
+          >" ·
+          <a
+            routerLink="/"
+            queryParamsHandling="merge"
+            [queryParams]="{ q: null }"
+            class="cf-enlace"
+            >Limpiar búsqueda</a
+          >
+        </p>
+      }
+
+      @for (t of temas$ | async; track t.id) {
+        <article class="cf-tarjeta">
+          <div class="cf-votos">
+            <button [class.activo]="miVoto(t.id) === 1" (click)="votar(t.id, 1)">▲</button>
+            <span>{{ t.votos }}</span>
+            <button [class.activo-bajo]="miVoto(t.id) === -1" (click)="votar(t.id, -1)">▼</button>
+          </div>
+          <div class="cf-cuerpo">
+            <span class="cf-chip">{{ nombreCategoria(t.idCategoria) }}</span>
+            <a [routerLink]="['/tema', t.id]" class="cf-titulo">{{ t.titulo }}</a>
+            <p>{{ t.contenido }}</p>
+            <small>por {{ t.autor }} · {{ t.fecha | date: 'dd/MM/yyyy HH:mm' }}</small>
+          </div>
+        </article>
+      } @empty {
+        <div class="cf-panel text-center text-secondary">
+          No hay temas que coincidan con tu búsqueda.
+        </div>
+      }
+    </section>
+
+    <!-- Derecha: más votados (solo escritorio) -->
+    <aside class="col-lg-3 d-none d-lg-block">
+      <div class="cf-panel">
+        <h6 class="cf-panel-titulo">Más votados</h6>
+        @for (p of populares$ | async; track p.id) {
+          <a [routerLink]="['/tema', p.id]" class="cf-relacionado">
+            {{ p.titulo }}
+            <small>{{ p.votos }} votos</small>
+          </a>
+        }
+      </div>
+    </aside>
+  </div>
+</div>

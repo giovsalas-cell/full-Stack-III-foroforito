@@ -1,0 +1,61 @@
+<div class="cf-auth">
+  <div class="cf-auth-card">
+    <h1 class="cf-auth-titulo h3">Iniciar sesión</h1>
+    <p class="text-secondary">Entra para comentar y votar en CinemaForo.</p>
+
+    <form [formGroup]="form" (ngSubmit)="ingresar()" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="correo">Correo</label>
+        <input
+          id="correo"
+          type="email"
+          class="form-control"
+          formControlName="correo"
+          placeholder="tucorreo@ejemplo.cl"
+          autocomplete="email"
+        />
+        @if (form.controls.correo.touched && form.controls.correo.errors) {
+          <div class="cf-error">
+            @if (form.controls.correo.errors['required']) {
+              El correo es obligatorio.
+            } @else if (form.controls.correo.errors['email']) {
+              Ingresa un correo válido.
+            }
+          </div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="contrasena">Contraseña</label>
+        <input
+          id="contrasena"
+          type="password"
+          class="form-control"
+          formControlName="contrasena"
+          autocomplete="current-password"
+        />
+        @if (form.controls.contrasena.touched && form.controls.contrasena.errors) {
+          <div class="cf-error">La contraseña es obligatoria.</div>
+        }
+      </div>
+
+      @if (error) {
+        <div class="cf-error mb-3">{{ error }}</div>
+      }
+
+      <button type="submit" class="btn cf-btn w-100">Entrar</button>
+    </form>
+
+    <div class="d-flex justify-content-between mt-3">
+      <a routerLink="/recuperar" class="cf-enlace">¿Olvidaste tu contraseña?</a>
+      <a routerLink="/registro" class="cf-enlace">Crear cuenta</a>
+    </div>
+
+    <hr style="border-color: var(--cf-borde)" />
+    <small class="text-secondary">
+      Cuentas de prueba: <br />
+      Admin: admin&#64;cinemaforo.cl / Admin123! <br />
+      Usuario: cine&#64;cinemaforo.cl / Cine1234!
+    </small>
+  </div>
+</div>

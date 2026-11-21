@@ -1,0 +1,17 @@
+.cf-nuevo {
+  max-width: 720px;
+  margin: 2rem auto;
+}
+
+.cf-select {
+  background-color: var(--cf-superficie);
+  border: 1px solid var(--cf-borde);
+  color: var(--cf-texto);
+  border-radius: 12px;
+}
+.cf-select:focus {
+  background-color: var(--cf-superficie);
+  color: var(--cf-texto);
+  border-color: var(--cf-morado);
+  box-shadow: 0 0 0 0.2rem rgba(107, 47, 240, 0.25);
+}

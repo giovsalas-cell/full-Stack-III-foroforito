@@ -1,0 +1,66 @@
+<div class="container-fluid">
+  <h1 class="h3 fw-bold">Moderar comentarios</h1>
+  <p class="text-secondary">
+    Banea los comentarios que incumplan las normas del foro, o reactívalos.
+  </p>
+
+  <div class="d-flex gap-2 mb-3 flex-wrap">
+    @for (f of filtros; track f) {
+      <button
+        type="button"
+        class="cf-filtro"
+        [class.activo]="filtroActual === f"
+        (click)="cambiarFiltro(f)"
+      >
+        {{ f }}
+      </button>
+    }
+  </div>
+
+  <div class="cf-panel table-responsive">
+    <table class="table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Comentario</th>
+          <th>Autor</th>
+          <th>Tema</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th class="text-end">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of comentarios$ | async; track c.id) {
+          <tr>
+            <td>{{ c.id }}</td>
+            <td class="cf-celda-texto">{{ c.contenido }}</td>
+            <td>{{ c.autor }}</td>
+            <td class="cf-celda-texto">{{ tituloTema(c.idTema) }}</td>
+            <td>{{ c.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td>
+              <span class="cf-estado" [class.baneado]="c.estado === 'BANEADO'">{{ c.estado }}</span>
+            </td>
+            <td class="text-end">
+              @if (c.estado === 'ACTIVO') {
+                <button type="button" class="btn btn-sm cf-btn-peligro" (click)="banear(c.id)">
+                  Banear
+                </button>
+              } @else {
+                <button type="button" class="btn btn-sm cf-btn" (click)="reactivar(c.id)">
+                  Reactivar
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="text-center text-secondary py-4">
+              No hay comentarios con este filtro.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

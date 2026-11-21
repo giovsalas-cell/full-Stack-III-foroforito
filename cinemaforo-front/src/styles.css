@@ -1,0 +1,197 @@
+/* You can add global styles to this file, and also import other style files */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+:root {
+  --cf-fondo: #050507;
+  --cf-superficie: #0f0f18;
+  --cf-borde: #23233a;
+  --cf-morado: #6b2ff0;
+  --cf-azul: #2f6bff;
+  --cf-gradiente: linear-gradient(135deg, #6b2ff0, #2f6bff);
+  --cf-texto: #ffffff;
+  --cf-texto-suave: #a9a9bd;
+  --cf-acento: #f2b632; /* solo para estrellas y destacados */
+}
+
+body {
+  background: radial-gradient(ellipse at top, #1a1040 0%, #050507 55%) fixed;
+  color: var(--cf-texto);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+}
+/* ---------- Estilos compartidos de CinemaForo ---------- */
+.cf-btn {
+  background: var(--cf-gradiente);
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  font-weight: 600;
+  padding: 0.45rem 1.2rem;
+}
+.cf-btn:hover {
+  filter: brightness(1.15);
+  color: #fff;
+}
+.cf-btn:disabled {
+  opacity: 0.5;
+}
+
+.cf-chip {
+  display: inline-block;
+  background: var(--cf-gradiente);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  margin-bottom: 0.4rem;
+}
+
+.cf-panel {
+  background: var(--cf-superficie);
+  border: 1px solid var(--cf-borde);
+  border-radius: 16px;
+  padding: 1rem;
+}
+.cf-panel-titulo {
+  color: var(--cf-texto-suave);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+}
+
+.cf-votos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 2.5rem;
+}
+.cf-votos button {
+  background: none;
+  border: 0;
+  color: var(--cf-texto-suave);
+  line-height: 1;
+}
+.cf-votos button:hover {
+  color: var(--cf-morado);
+}
+.cf-votos button.activo {
+  color: var(--cf-morado);
+}
+.cf-votos button.activo-bajo {
+  color: var(--cf-azul);
+}
+.cf-votos span {
+  font-weight: 700;
+}
+/* ---------- Formularios ---------- */
+.form-control {
+  background: var(--cf-superficie);
+  border: 1px solid var(--cf-borde);
+  color: var(--cf-texto);
+  border-radius: 12px;
+}
+.form-control::placeholder {
+  color: var(--cf-texto-suave);
+}
+.form-control:focus {
+  background: var(--cf-superficie);
+  color: var(--cf-texto);
+  border-color: var(--cf-morado);
+  box-shadow: 0 0 0 0.2rem rgba(107, 47, 240, 0.25);
+}
+.form-label {
+  color: var(--cf-texto-suave);
+  font-size: 0.9rem;
+}
+
+.cf-auth {
+  max-width: 440px;
+  margin: 2.5rem auto;
+}
+.cf-auth-card {
+  background: var(--cf-superficie);
+  border: 1px solid var(--cf-borde);
+  border-radius: 20px;
+  padding: 2rem;
+}
+.cf-auth-titulo {
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+.cf-error {
+  color: #ff6b81;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+.cf-ok {
+  color: #4ade80;
+  font-size: 0.9rem;
+}
+.cf-enlace {
+  color: var(--cf-azul);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.cf-enlace:hover {
+  text-decoration: underline;
+}
+.table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--cf-texto);
+  --bs-table-border-color: var(--cf-borde);
+  --bs-table-hover-bg: rgba(107, 47, 240, 0.08);
+}
+.table th {
+  color: var(--cf-texto-suave);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cf-filtro {
+  background: var(--cf-superficie);
+  border: 1px solid var(--cf-borde);
+  color: var(--cf-texto);
+  border-radius: 999px;
+  padding: 0.35rem 1rem;
+  font-size: 0.85rem;
+}
+.cf-filtro:hover {
+  border-color: var(--cf-morado);
+}
+.cf-filtro.activo {
+  background: var(--cf-gradiente);
+  border-color: transparent;
+  font-weight: 700;
+}
+
+.cf-estado {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+}
+.cf-estado.baneado {
+  background: rgba(255, 107, 129, 0.15);
+  color: #ff6b81;
+}
+
+.cf-btn-peligro {
+  background: transparent;
+  border: 1px solid #ff6b81;
+  color: #ff6b81;
+  border-radius: 999px;
+}
+.cf-btn-peligro:hover {
+  background: #ff6b81;
+  color: #fff;
+}

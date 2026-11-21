@@ -1,0 +1,136 @@
+.cf-panel {
+  background: var(--cf-superficie);
+  border: 1px solid var(--cf-borde);
+  border-radius: 16px;
+  padding: 1rem;
+}
+.cf-panel-titulo {
+  color: var(--cf-texto-suave);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+}
+
+.cf-categoria {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  color: var(--cf-texto);
+  cursor: pointer;
+}
+.cf-categoria:hover {
+  background: rgba(107, 47, 240, 0.18);
+}
+
+.cf-tarjeta {
+  display: flex;
+  gap: 1rem;
+  background: var(--cf-superficie);
+  border: 1px solid var(--cf-borde);
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition:
+    border-color 0.2s,
+    transform 0.2s;
+}
+.cf-tarjeta:hover {
+  border-color: var(--cf-morado);
+  transform: translateY(-2px);
+}
+
+.cf-votos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 2.5rem;
+}
+.cf-votos button {
+  background: none;
+  border: 0;
+  color: var(--cf-texto-suave);
+  line-height: 1;
+}
+.cf-votos button:hover {
+  color: var(--cf-morado);
+}
+.cf-votos span {
+  font-weight: 700;
+}
+
+.cf-chip {
+  display: inline-block;
+  background: var(--cf-gradiente);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  margin-bottom: 0.4rem;
+}
+.cf-titulo {
+  display: block;
+  color: var(--cf-texto);
+  font-weight: 700;
+  font-size: 1.15rem;
+  text-decoration: none;
+}
+.cf-titulo:hover {
+  color: var(--cf-azul);
+}
+.cf-cuerpo p {
+  color: var(--cf-texto-suave);
+  margin: 0.4rem 0;
+}
+.cf-cuerpo small {
+  color: var(--cf-texto-suave);
+}
+
+.cf-relacionado {
+  display: block;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--cf-borde);
+  color: var(--cf-texto);
+  text-decoration: none;
+}
+.cf-relacionado:last-child {
+  border-bottom: 0;
+}
+.cf-relacionado small {
+  display: block;
+  color: var(--cf-texto-suave);
+}
+.cf-votos button.activo {
+  color: var(--cf-morado);
+}
+.cf-votos button.activo-bajo {
+  color: var(--cf-azul);
+}
+.cf-categoria.activa {
+  background: rgba(107, 47, 240, 0.28);
+  font-weight: 700;
+}
+
+.cf-chips {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+.cf-chip-cat {
+  white-space: nowrap;
+  background: var(--cf-superficie);
+  border: 1px solid var(--cf-borde);
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  color: var(--cf-texto);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+.cf-chip-cat.activa {
+  background: var(--cf-gradiente);
+  border-color: transparent;
+  font-weight: 700;
+}

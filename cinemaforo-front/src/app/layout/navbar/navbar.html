@@ -1,0 +1,37 @@
+<nav class="cf-navbar">
+  <div class="container-fluid d-flex align-items-center gap-3">
+    <a routerLink="/" class="cf-logo">Cinema<span>Foro</span></a>
+
+    <form
+      class="cf-buscador flex-grow-1 d-none d-md-block"
+      (submit)="$event.preventDefault(); buscar(q.value)"
+    >
+      <input #q type="search" class="form-control" placeholder="Buscar en CinemaForo" />
+    </form>
+    <div class="ms-auto d-flex align-items-center gap-2">
+      @if (usuario$ | async; as u) {
+        @if (u.rol === 'ADMIN') {
+          <div class="cf-menu">
+            <button type="button" class="btn cf-btn-borde" (click)="menuAdmin = !menuAdmin">
+              Administración ▾
+            </button>
+            @if (menuAdmin) {
+              <div class="cf-menu-lista" (click)="menuAdmin = false">
+                <a routerLink="/admin/temas">Moderar temas</a>
+                <a routerLink="/admin/comentarios">Moderar comentarios</a>
+                <a routerLink="/admin/usuarios">Gestionar usuarios</a>
+              </div>
+            }
+          </div>
+        }
+
+        <a routerLink="/nuevo-tema" class="btn cf-btn-borde">+ Nuevo tema</a>
+        <a routerLink="/perfil" class="cf-usuario d-none d-sm-inline">{{ u.nombre }}</a>
+        <button type="button" class="btn cf-btn" (click)="salir()">Cerrar sesión</button>
+      } @else {
+        <a routerLink="/registro" class="btn cf-btn-borde">Registrarse</a>
+        <a routerLink="/login" class="btn cf-btn">Iniciar sesión</a>
+      }
+    </div>
+  </div>
+</nav>

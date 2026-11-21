@@ -1,0 +1,75 @@
+<div class="cf-nuevo">
+  <div class="cf-auth-card">
+    <h1 class="cf-auth-titulo h3">Nuevo tema</h1>
+    <p class="text-secondary">Comparte algo con la comunidad de CinemaForo.</p>
+
+    <form [formGroup]="form" (ngSubmit)="publicar()" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="categoria">Categoría</label>
+        <select id="categoria" class="form-select cf-select" formControlName="idCategoria">
+          <option [ngValue]="0">Selecciona una categoría</option>
+          @for (c of categorias; track c.id) {
+            <option [ngValue]="c.id">{{ c.nombre }}</option>
+          }
+        </select>
+        @if (form.controls.idCategoria.touched && form.controls.idCategoria.errors) {
+          <div class="cf-error">Debes elegir una categoría.</div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="titulo">Título</label>
+        <input
+          id="titulo"
+          type="text"
+          class="form-control"
+          formControlName="titulo"
+          maxlength="100"
+          placeholder="¿De qué quieres hablar?"
+        />
+        @if (form.controls.titulo.touched && form.controls.titulo.errors; as e) {
+          <div class="cf-error">
+            @if (e['required']) {
+              El título es obligatorio.
+            } @else if (e['minlength']) {
+              El título debe tener al menos 5 caracteres.
+            } @else if (e['maxlength']) {
+              El título no puede superar los 100 caracteres.
+            }
+          </div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="contenido">Contenido</label>
+        <textarea
+          id="contenido"
+          class="form-control"
+          rows="6"
+          formControlName="contenido"
+          maxlength="1000"
+          placeholder="Cuéntanos más..."
+        ></textarea>
+        <div class="d-flex justify-content-between">
+          <div>
+            @if (form.controls.contenido.touched && form.controls.contenido.errors; as e) {
+              <div class="cf-error">
+                @if (e['required']) {
+                  El contenido es obligatorio.
+                } @else if (e['minlength']) {
+                  El contenido debe tener al menos 10 caracteres.
+                }
+              </div>
+            }
+          </div>
+          <small class="text-secondary">{{ form.controls.contenido.value.length }}/1000</small>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 justify-content-end">
+        <a routerLink="/" class="btn cf-btn-borde">Cancelar</a>
+        <button type="submit" class="btn cf-btn">Publicar</button>
+      </div>
+    </form>
+  </div>
+</div>
