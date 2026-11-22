@@ -1,41 +1,55 @@
-import { Component, inject } from '@angular/core';
-import { AsyncPipe, DatePipe } from '@angular/common';
-import { BehaviorSubject, combineLatest, map } from 'rxjs';
-import { Foro } from '../../services/foro';
-
-type Filtro = 'TODOS' | 'ACTIVO' | 'BANEADO';
+import { Component, computed, inject, signal } from '@angular/core';
+import { Admin } from '../../services/admin';
+import { Auth } from '../../services/auth';
+import { ComentarioAdmin, EstadoAdmin } from '../../models/admin.models';
+import { mensajeError } from '../../utils/errores';
 
 @Component({
   selector: 'app-admin-comentarios',
-  imports: [AsyncPipe, DatePipe],
   templateUrl: './admin-comentarios.html',
-  styleUrl: './admin-comentarios.css',
 })
 export class AdminComentarios {
-  private foro = inject(Foro);
-  private filtro$ = new BehaviorSubject<Filtro>('TODOS');
+  private admin = inject(Admin);
+  auth = inject(Auth);
 
-  filtros: Filtro[] = ['TODOS', 'ACTIVO', 'BANEADO'];
-  filtroActual: Filtro = 'TODOS';
+  comentarios = signal<ComentarioAdmin[]>([]);
+  filtro = signal<'TODOS' | EstadoAdmin>('TODOS');
+  error = signal('');
 
-  comentarios$ = combineLatest([this.foro.comentarios$, this.filtro$]).pipe(
-    map(([lista, filtro]) => lista.filter((c) => filtro === 'TODOS' || c.estado === filtro)),
+  visibles = computed(() =>
+    this.comentarios().filter((c) => this.filtro() === 'TODOS' || c.estado === this.filtro()),
   );
 
-  cambiarFiltro(filtro: Filtro): void {
-    this.filtroActual = filtro;
-    this.filtro$.next(filtro);
+  constructor() {
+    this.cargar();
   }
 
-  tituloTema(idTema: number): string {
-    return this.foro.obtenerTema(idTema)?.titulo ?? '—';
+  cargar(): void {
+    this.admin.comentariosTodos().subscribe({
+      next: (lista) => this.comentarios.set(lista),
+      error: (e) => this.error.set(mensajeError(e)),
+    });
   }
 
-  banear(id: number): void {
-    this.foro.cambiarEstadoComentario(id, 'BANEADO');
+  cambiarFiltro(valor: string): void {
+    this.filtro.set(valor as 'TODOS' | EstadoAdmin);
   }
 
-  reactivar(id: number): void {
-    this.foro.cambiarEstadoComentario(id, 'ACTIVO');
+  autor(id: number): string {
+    return this.auth.nombreDe(id);
+  }
+
+  banear(c: ComentarioAdmin): void {
+    this.admin.banearComentario(c.idComentario).subscribe({
+      next: () => this.cargar(),
+      error: (e) => this.error.set(mensajeError(e)),
+    });
+  }
+
+  reactivar(c: ComentarioAdmin): void {
+    this.admin.reactivarComentario(c.idComentario).subscribe({
+      next: () => this.cargar(),
+      error: (e) => this.error.set(mensajeError(e)),
+    });
   }
 }

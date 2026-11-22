@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth';
-
+import { mensajeError } from '../../utils/errores';
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, RouterLink],
@@ -22,15 +22,15 @@ export class Login {
   });
 
   ingresar(): void {
+    this.error = '';
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
     const { correo, contrasena } = this.form.getRawValue();
-    if (this.auth.login(correo, contrasena)) {
-      this.router.navigate([this.auth.esAdmin ? '/admin' : '/']);
-    } else {
-      this.error = 'Correo o contraseña incorrectos.';
-    }
+    this.auth.login(correo, contrasena).subscribe({
+      next: () => this.router.navigate([this.auth.esAdmin ? '/admin' : '/']),
+      error: (e) => (this.error = mensajeError(e)),
+    });
   }
 }

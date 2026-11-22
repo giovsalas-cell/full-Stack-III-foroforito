@@ -1,99 +1,106 @@
-<div class="container-fluid">
-  <div class="row g-3">
-    <!-- Izquierda: categorías (tablet y escritorio) -->
-    <aside class="col-md-4 col-lg-3 d-none d-md-block">
-      <div class="cf-panel">
-        <h6 class="cf-panel-titulo">Categorías</h6>
-        <a
-          class="cf-categoria"
-          [class.activa]="(catActual$ | async) === 0"
-          routerLink="/"
-          queryParamsHandling="merge"
-          [queryParams]="{ cat: null }"
-          >Todas</a
-        >
-        @for (c of categorias; track c.id) {
+<div class="container py-4">
+  <div class="row g-4">
+    <!-- Columna izquierda: categorías -->
+    <aside class="col-12 col-lg-3">
+      <div class="cf-panel p-3">
+        <h6 class="text-uppercase text-secondary mb-3">Categorías</h6>
+        <div class="d-flex flex-wrap flex-lg-column gap-2">
           <a
-            class="cf-categoria"
-            [class.activa]="(catActual$ | async) === c.id"
+            class="cf-chip text-decoration-none"
             routerLink="/"
-            queryParamsHandling="merge"
-            [queryParams]="{ cat: c.id }"
-            >{{ c.nombre }}</a
+            [class.active]="cat() === null && !q()"
           >
-        }
+            Todas
+          </a>
+          @for (c of (categorias$ | async) ?? []; track c.idCategoria) {
+            <a
+              class="cf-chip text-decoration-none"
+              routerLink="/"
+              [queryParams]="{ cat: c.idCategoria }"
+              [class.active]="cat() === c.idCategoria"
+              [title]="c.descripcion"
+            >
+              {{ c.nombre }}
+            </a>
+          }
+        </div>
       </div>
     </aside>
 
-    <!-- Centro: temas -->
-    <section class="col-12 col-md-8 col-lg-6">
-      <!-- Categorías en móvil -->
-      <div class="cf-chips d-md-none mb-3">
-        <a
-          class="cf-chip-cat"
-          [class.activa]="(catActual$ | async) === 0"
-          routerLink="/"
-          queryParamsHandling="merge"
-          [queryParams]="{ cat: null }"
-          >Todas</a
-        >
-        @for (c of categorias; track c.id) {
-          <a
-            class="cf-chip-cat"
-            [class.activa]="(catActual$ | async) === c.id"
-            routerLink="/"
-            queryParamsHandling="merge"
-            [queryParams]="{ cat: c.id }"
-            >{{ c.nombre }}</a
+    <!-- Columna central: temas -->
+    <section class="col-12 col-lg-6">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex gap-2">
+          <button
+            type="button"
+            class="cf-btn"
+            [class.opacity-50]="populares()"
+            (click)="cambiarOrden(false)"
           >
+            Recientes
+          </button>
+          <button
+            type="button"
+            class="cf-btn"
+            [class.opacity-50]="!populares()"
+            (click)="cambiarOrden(true)"
+          >
+            Populares
+          </button>
+        </div>
+        @if (auth.usuarioActual) {
+          <a class="cf-btn text-decoration-none" routerLink="/nuevo-tema">+ Nuevo tema</a>
         }
       </div>
 
-      @if (textoBusqueda$ | async; as q) {
-        <p class="text-secondary">
-          Resultados para "<strong>{{ q }}</strong
-          >" ·
-          <a
-            routerLink="/"
-            queryParamsHandling="merge"
-            [queryParams]="{ q: null }"
-            class="cf-enlace"
-            >Limpiar búsqueda</a
-          >
-        </p>
+      @if (q()) {
+        <p class="text-secondary">Resultados para "{{ q() }}"</p>
       }
 
-      @for (t of temas$ | async; track t.id) {
-        <article class="cf-tarjeta">
-          <div class="cf-votos">
-            <button [class.activo]="miVoto(t.id) === 1" (click)="votar(t.id, 1)">▲</button>
-            <span>{{ t.votos }}</span>
-            <button [class.activo-bajo]="miVoto(t.id) === -1" (click)="votar(t.id, -1)">▼</button>
-          </div>
-          <div class="cf-cuerpo">
-            <span class="cf-chip">{{ nombreCategoria(t.idCategoria) }}</span>
-            <a [routerLink]="['/tema', t.id]" class="cf-titulo">{{ t.titulo }}</a>
-            <p>{{ t.contenido }}</p>
-            <small>por {{ t.autor }} · {{ t.fecha | date: 'dd/MM/yyyy HH:mm' }}</small>
-          </div>
-        </article>
-      } @empty {
-        <div class="cf-panel text-center text-secondary">
-          No hay temas que coincidan con tu búsqueda.
-        </div>
+      @if (error()) {
+        <div class="cf-error mb-3">{{ error() }}</div>
+      }
+
+      @if (cargando()) {
+        <p class="text-secondary">Cargando temas...</p>
+      } @else {
+        @for (t of temas(); track t.idTema) {
+          <article class="cf-panel p-3 mb-3">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2 small text-secondary">
+              <span class="cf-chip">{{ t.categoria }}</span>
+              <span>por {{ autor(t) }}</span>
+              <span>· {{ t.fecha | date: 'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <h5 class="mb-2">
+              <a class="text-decoration-none text-reset" [routerLink]="['/tema', t.idTema]">{{
+                t.titulo
+              }}</a>
+            </h5>
+            <p class="text-secondary mb-2">
+              {{ t.contenido.length > 180 ? t.contenido.slice(0, 180) + '...' : t.contenido }}
+            </p>
+            <a class="cf-enlace small" [routerLink]="['/tema', t.idTema]">
+              {{ t.totalComentarios }} {{ t.totalComentarios === 1 ? 'comentario' : 'comentarios' }}
+            </a>
+          </article>
+        } @empty {
+          @if (!error()) {
+            <div class="cf-panel p-4 text-center text-secondary">No hay temas para mostrar.</div>
+          }
+        }
       }
     </section>
 
-    <!-- Derecha: más votados (solo escritorio) -->
-    <aside class="col-lg-3 d-none d-lg-block">
-      <div class="cf-panel">
-        <h6 class="cf-panel-titulo">Más votados</h6>
-        @for (p of populares$ | async; track p.id) {
-          <a [routerLink]="['/tema', p.id]" class="cf-relacionado">
-            {{ p.titulo }}
-            <small>{{ p.votos }} votos</small>
-          </a>
-        }
+    <!-- Columna derecha: reglas -->
+    <aside class="col-12 col-lg-3">
+      <div class="cf-panel cf-reglas p-3">
+        <h6 class="text-uppercase text-secondary mb-3">Reglas de CinemaForo</h6>
+        <ol class="small text-secondary ps-3 m-0">
+          <li>Respeta a los demás usuarios.</li>
+          <li>Evita spoilers sin avisarlo en el título.</li>
+          <li>Publica en la categoría correcta.</li>
+          <li>Los temas y comentarios ofensivos pueden ser baneados.</li>
+        </ol>
       </div>
     </aside>
   </div>

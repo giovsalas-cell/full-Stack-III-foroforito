@@ -1,14 +1,15 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AsyncPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { Auth } from '../../services/auth';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Foro } from '../../services/foro';
+import { Auth } from '../../services/auth';
+import { mensajeError } from '../../utils/errores';
 
 @Component({
   selector: 'app-nuevo-tema',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AsyncPipe],
   templateUrl: './nuevo-tema.html',
-  styleUrl: './nuevo-tema.css',
 })
 export class NuevoTema {
   private fb = inject(FormBuilder);
@@ -16,30 +17,33 @@ export class NuevoTema {
   private auth = inject(Auth);
   private router = inject(Router);
 
-  categorias = this.foro.categorias;
+  categorias$ = this.foro.categorias$;
+  error = '';
 
   form = this.fb.nonNullable.group({
-    titulo: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
-    idCategoria: [0, [Validators.min(1)]],
+    titulo: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(150)]],
+    idCategoria: [0, [Validators.required, Validators.min(1)]],
     contenido: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000)]],
   });
 
   publicar(): void {
-    if (this.form.invalid) {
+    this.error = '';
+    const usuario = this.auth.usuarioActual;
+    if (this.form.invalid || !usuario) {
       this.form.markAllAsTouched();
       return;
     }
-    const usuario = this.auth.usuarioActual;
-    if (!usuario) return;
-
-    const { titulo, idCategoria, contenido } = this.form.getRawValue();
-    const id = this.foro.crearTema({
-      titulo: titulo.trim(),
-      contenido: contenido.trim(),
-      idCategoria: Number(idCategoria),
-      idUsuario: usuario.id,
-      autor: usuario.nombre,
-    });
-    this.router.navigate(['/tema', id]);
+    const { titulo, contenido, idCategoria } = this.form.getRawValue();
+    this.foro
+      .crearTema({
+        titulo,
+        contenido,
+        idCategoria: Number(idCategoria),
+        idUsuario: usuario.idUsuario,
+      })
+      .subscribe({
+        next: (t) => this.router.navigate(['/tema', t.idTema]),
+        error: (e) => (this.error = mensajeError(e)),
+      });
   }
 }

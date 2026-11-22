@@ -1,42 +1,54 @@
-import { Component, inject } from '@angular/core';
-import { AsyncPipe, DatePipe } from '@angular/common';
-import { BehaviorSubject, combineLatest, map } from 'rxjs';
-import { Foro } from '../../services/foro';
-
-type Filtro = 'TODOS' | 'ACTIVO' | 'BANEADO';
+import { Component, computed, inject, signal } from '@angular/core';
+import { Admin } from '../../services/admin';
+import { Auth } from '../../services/auth';
+import { EstadoAdmin, TemaAdmin } from '../../models/admin.models';
+import { mensajeError } from '../../utils/errores';
 
 @Component({
   selector: 'app-admin-temas',
-  imports: [AsyncPipe, DatePipe],
   templateUrl: './admin-temas.html',
-  styleUrl: './admin-temas.css',
 })
 export class AdminTemas {
-  private foro = inject(Foro);
-  private filtro$ = new BehaviorSubject<Filtro>('TODOS');
+  private admin = inject(Admin);
+  auth = inject(Auth);
 
-  filtros: Filtro[] = ['TODOS', 'ACTIVO', 'BANEADO'];
-  filtroActual: Filtro = 'TODOS';
+  temas = signal<TemaAdmin[]>([]);
+  filtro = signal<'TODOS' | EstadoAdmin>('TODOS');
+  error = signal('');
 
-  // Todos los temas (activos y baneados), según el filtro elegido
-  temas$ = combineLatest([this.foro.temas$, this.filtro$]).pipe(
-    map(([lista, filtro]) => lista.filter((t) => filtro === 'TODOS' || t.estado === filtro)),
+  visibles = computed(() =>
+    this.temas().filter((t) => this.filtro() === 'TODOS' || t.estado === this.filtro()),
   );
 
-  cambiarFiltro(filtro: Filtro): void {
-    this.filtroActual = filtro;
-    this.filtro$.next(filtro);
+  constructor() {
+    this.cargar();
+  }
+  cargar(): void {
+    this.admin.temasTodos().subscribe({
+      next: (lista) => this.temas.set(lista),
+      error: (e) => this.error.set(mensajeError(e)),
+    });
   }
 
-  nombreCategoria(id: number): string {
-    return this.foro.categoriaNombre(id);
+  cambiarFiltro(valor: string): void {
+    this.filtro.set(valor as 'TODOS' | EstadoAdmin);
   }
 
-  banear(id: number): void {
-    this.foro.cambiarEstadoTema(id, 'BANEADO');
+  autor(id: number): string {
+    return this.auth.nombreDe(id);
   }
 
-  reactivar(id: number): void {
-    this.foro.cambiarEstadoTema(id, 'ACTIVO');
+  banear(t: TemaAdmin): void {
+    this.admin.banearTema(t.idTema).subscribe({
+      next: () => this.cargar(),
+      error: (e) => this.error.set(mensajeError(e)),
+    });
+  }
+
+  reactivar(t: TemaAdmin): void {
+    this.admin.reactivarTema(t.idTema).subscribe({
+      next: () => this.cargar(),
+      error: (e) => this.error.set(mensajeError(e)),
+    });
   }
 }

@@ -18,3 +18,4 @@ export function contrasenaSegura(c: AbstractControl): ValidationErrors | null {
 export function coinciden(g: AbstractControl): ValidationErrors | null {
   return g.get('contrasena')?.value === g.get('confirmar')?.value ? null : { noCoinciden: true };
 }
+export const PATRON_NOMBRE = /^[A-Za-zÁÉÍÓÚÜáéíóúüÑñ0-9_ ]+$/;

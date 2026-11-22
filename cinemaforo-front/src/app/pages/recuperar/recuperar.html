@@ -24,6 +24,9 @@
             </div>
           }
         </div>
+        @if (error) {
+          <div class="cf-error mb-3">{{ error }}</div>
+        }
         <button type="submit" class="btn cf-btn w-100">Enviar instrucciones</button>
       </form>
     } @else {

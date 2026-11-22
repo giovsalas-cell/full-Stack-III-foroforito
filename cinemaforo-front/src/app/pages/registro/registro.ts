@@ -8,7 +8,8 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth';
-
+import { PATRON_NOMBRE } from '../../utils/validadores';
+import { mensajeError } from '../../utils/errores';
 // Reglas de la contraseña (se usan para validar y para mostrar la lista)
 
 import { coinciden, contrasenaSegura, evaluarReglas } from '../../utils/validadores';
@@ -57,11 +58,16 @@ export class Registro {
       return;
     }
     const { nombre, correo, contrasena } = this.form.getRawValue();
-    if (this.auth.registrar(nombre, correo, contrasena)) {
-      this.exito = 'Cuenta creada con éxito. Te llevamos al inicio de sesión...';
-      setTimeout(() => this.router.navigate(['/login']), 1500);
-    } else {
-      this.error = 'El correo o el nombre de usuario ya está registrado.';
+    if (this.auth.nombreExiste(nombre)) {
+      this.error = 'Ese nombre de usuario ya está en uso.';
+      return;
     }
+    this.auth.registrar(nombre, correo, contrasena).subscribe({
+      next: () => {
+        this.exito = 'Cuenta creada con éxito. Te llevamos al inicio de sesión...';
+        setTimeout(() => this.router.navigate(['/login']), 1500);
+      },
+      error: (e) => (this.error = mensajeError(e)),
+    });
   }
 }

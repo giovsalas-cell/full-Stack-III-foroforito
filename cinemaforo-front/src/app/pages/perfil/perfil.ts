@@ -6,26 +6,33 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth';
-import { coinciden, contrasenaSegura, evaluarReglas } from '../../utils/validadores';
+import { Usuario } from '../../models/auth.models';
+import { contrasenaSegura, evaluarReglas, PATRON_NOMBRE } from '../../utils/validadores';
+import { mensajeError } from '../../utils/errores';
 
-// La contraseña nueva es opcional: si se deja vacía, no se cambia
+// La contraseña es opcional: solo se valida si el usuario escribió algo
 function contrasenaOpcional(c: AbstractControl): ValidationErrors | null {
   return c.value ? contrasenaSegura(c) : null;
 }
 
+// Si hay contraseña nueva, la confirmación debe coincidir
+function confirmacionCoincide(g: AbstractControl): ValidationErrors | null {
+  const contrasena = g.get('contrasena')?.value;
+  const confirmar = g.get('confirmar')?.value;
+  return contrasena && contrasena !== confirmar ? { noCoinciden: true } : null;
+}
+
 @Component({
   selector: 'app-perfil',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   templateUrl: './perfil.html',
-  styleUrl: './perfil.css',
 })
 export class Perfil {
   private fb = inject(FormBuilder);
   private auth = inject(Auth);
 
-  usuario = this.auth.usuarioActual;
+  usuario: Usuario | null = this.auth.usuarioActual;
   error = '';
   exito = '';
 
@@ -36,16 +43,17 @@ export class Perfil {
         [
           Validators.required,
           Validators.minLength(3),
-          Validators.maxLength(20),
-          Validators.pattern(/^[A-Za-z0-9_]+$/),
+          Validators.maxLength(80),
+          Validators.pattern(PATRON_NOMBRE),
         ],
       ],
       contrasena: ['', [contrasenaOpcional]],
       confirmar: [''],
     },
-    { validators: coinciden },
+    { validators: [confirmacionCoincide] },
   );
 
+  // Reglas de la contraseña nueva (para mostrarlas en el HTML)
   get reglas() {
     return evaluarReglas(this.form.controls.contrasena.value);
   }
@@ -53,18 +61,29 @@ export class Perfil {
   guardar(): void {
     this.error = '';
     this.exito = '';
-    if (this.form.invalid) {
+    if (this.form.invalid || !this.usuario) {
       this.form.markAllAsTouched();
       return;
     }
     const { nombre, contrasena } = this.form.getRawValue();
-    if (this.usuario && nombre !== this.usuario.nombre && this.auth.nombreExiste(nombre)) {
+    if (this.auth.nombreExiste(nombre, this.usuario.idUsuario)) {
       this.error = 'Ese nombre de usuario ya está en uso.';
       return;
     }
-    this.auth.actualizarPerfil(nombre, contrasena || undefined);
-    this.usuario = this.auth.usuarioActual;
-    this.form.patchValue({ contrasena: '', confirmar: '' });
-    this.exito = 'Perfil actualizado correctamente.';
+    this.auth
+      .actualizar(this.usuario.idUsuario, {
+        nombre,
+        correo: this.usuario.correo,
+        rol: this.usuario.rol,
+        contrasena: contrasena || undefined,
+      })
+      .subscribe({
+        next: (u) => {
+          this.usuario = u;
+          this.form.patchValue({ contrasena: '', confirmar: '' });
+          this.exito = 'Perfil actualizado correctamente.';
+        },
+        error: (e) => (this.error = mensajeError(e)),
+      });
   }
 }

@@ -43,10 +43,26 @@ public class UsuarioService {
                 .stream().map(this::aResponse).toList();
     }
 
-    public UsuarioResponse actualizar(Long id, UsuarioRequest req) {
+    public UsuarioResponse actualizar(Long id, UsuarioActualizarRequest req) {
         Usuario u = obtener(id);
-        aplicarDatos(u, req);
+        if (!u.getCorreo().equalsIgnoreCase(req.correo()) && usuarioRepository.existsByCorreo(req.correo())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un usuario con ese correo");
+        }
+        Rol rol = rolRepository.findById(req.idRol())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El rol indicado no existe"));
+        u.setNombre(req.nombre());
+        u.setCorreo(req.correo());
+        u.setRol(rol);
+        if (req.contrasena() != null && !req.contrasena().isBlank()) {
+            u.setContrasena(req.contrasena());
+        }
         return aResponse(usuarioRepository.save(u));
+    }
+
+    // Recuperación simulada: solo registra la solicitud (no revela si el correo
+    // existe)
+    public void recuperar(String correo) {
+        log.info("Solicitud de recuperación de contraseña para {}", correo);
     }
 
     public void eliminar(Long id) {

@@ -1,1 +1,143 @@
-<p>admin-usuarios works!</p>
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="m-0">Gestionar usuarios</h2>
+    <button type="button" class="cf-btn" (click)="mostrarForm = !mostrarForm">
+      {{ mostrarForm ? 'Cancelar' : '+ Nuevo usuario' }}
+    </button>
+  </div>
+
+  @if (exito) {
+    <div class="cf-ok mb-3">{{ exito }}</div>
+  }
+  @if (error && !mostrarForm) {
+    <div class="cf-error mb-3">{{ error }}</div>
+  }
+
+  @if (mostrarForm) {
+    <form [formGroup]="form" (ngSubmit)="crear()" class="cf-panel p-3 mb-4" novalidate>
+      @if (error) {
+        <div class="cf-error mb-3">{{ error }}</div>
+      }
+
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="nombre">Nombre</label>
+          <input
+            id="nombre"
+            type="text"
+            class="form-control"
+            formControlName="nombre"
+            maxlength="80"
+          />
+          @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+            <small class="cf-error d-block mt-1">
+              @if (form.controls.nombre.errors?.['required']) {
+                El nombre es obligatorio.
+              } @else if (form.controls.nombre.errors?.['minlength']) {
+                Mínimo 3 caracteres.
+              } @else if (form.controls.nombre.errors?.['maxlength']) {
+                No puede superar los 80 caracteres.
+              } @else {
+                Solo letras, números, espacios y guion bajo.
+              }
+            </small>
+          }
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="correo">Correo</label>
+          <input id="correo" type="email" class="form-control" formControlName="correo" />
+          @if (form.controls.correo.touched && form.controls.correo.invalid) {
+            <small class="cf-error d-block mt-1">Ingresa un correo válido.</small>
+          }
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="contrasena">Contraseña</label>
+          <input
+            id="contrasena"
+            type="password"
+            class="form-control"
+            formControlName="contrasena"
+            maxlength="20"
+          />
+          <small class="text-secondary d-block mt-1">
+            De 8 a 20 caracteres, con una mayúscula, un número y un carácter especial.
+          </small>
+          @if (form.controls.contrasena.touched && form.controls.contrasena.invalid) {
+            <small class="cf-error d-block mt-1">La contraseña no cumple las reglas.</small>
+          }
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label" for="rol">Rol</label>
+          <select id="rol" class="form-select form-control" formControlName="rol">
+            @for (r of roles; track r) {
+              <option [value]="r">{{ r }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button type="submit" class="cf-btn">Crear usuario</button>
+      </div>
+    </form>
+  }
+
+  <div class="cf-panel table-responsive">
+    <table class="table table-dark align-middle m-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Rol</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of (usuarios$ | async) ?? []; track u.idUsuario) {
+          <tr>
+            <td>{{ u.idUsuario }}</td>
+            <td>
+              {{ u.nombre }}
+              @if (esYo(u)) {
+                <span class="cf-chip ms-1">Tú</span>
+              }
+            </td>
+            <td>{{ u.correo }}</td>
+            <td>
+              <select
+                class="form-select form-select-sm form-control"
+                [value]="u.rol"
+                [disabled]="esYo(u)"
+                (change)="cambiarRol(u, $any($event.target).value)"
+              >
+                @for (r of roles; track r) {
+                  <option [value]="r" [selected]="r === u.rol">{{ r }}</option>
+                }
+              </select>
+            </td>
+            <td class="text-end">
+              <button
+                type="button"
+                class="btn btn-sm btn-peligro"
+                [disabled]="esYo(u)"
+                (click)="eliminar(u)"
+              >
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="text-center text-secondary py-4">
+              No hay usuarios para mostrar.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

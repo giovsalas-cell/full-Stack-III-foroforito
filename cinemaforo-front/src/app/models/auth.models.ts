@@ -1,9 +1,10 @@
 export type Rol = 'ADMIN' | 'USUARIO';
 
+// Lo que devuelve ms-usuarios (nunca incluye la contraseña)
 export interface Usuario {
-  id: number;
+  idUsuario: number;
   nombre: string;
   correo: string;
-  contrasena: string;
   rol: Rol;
+  fechaRegistro: string;
 }

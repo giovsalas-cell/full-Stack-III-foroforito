@@ -1,28 +1,34 @@
+// Formas que devuelve ms-foro (coinciden con los DTO del backend)
 export interface Categoria {
-  id: number;
+  idCategoria: number;
   nombre: string;
   descripcion: string;
 }
 
 export interface Tema {
-  id: number;
+  idTema: number;
   titulo: string;
   contenido: string;
   fecha: string;
-  estado: 'ACTIVO' | 'BANEADO';
+  estado: string;
   idUsuario: number;
-  autor: string;
-  idCategoria: number;
-  votos: number;
+  categoria: string;
+  totalComentarios: number;
 }
 
 export interface Comentario {
-  id: number;
-  idTema: number;
-  idPadre: number | null; // null = comentario principal; número = respuesta
-  autor: string;
+  idComentario: number;
   contenido: string;
   fecha: string;
-  estado: 'ACTIVO' | 'BANEADO';
-  votos: number;
+  estado: string;
+  idUsuario: number;
+  idTema: number;
+}
+
+// Lo que se envía al publicar un tema
+export interface TemaNuevo {
+  titulo: string;
+  contenido: string;
+  idUsuario: number;
+  idCategoria: number;
 }

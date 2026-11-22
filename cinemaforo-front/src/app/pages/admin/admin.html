@@ -1,1 +1,41 @@
-<p>admin works!</p>
+<div class="container py-4">
+  <h2 class="mb-1">Panel de administración</h2>
+  <p class="text-secondary mb-4">Hola, {{ auth.usuarioActual?.nombre }}.</p>
+
+  <div class="row g-3">
+    <div class="col-12 col-md-4">
+      <div class="cf-panel p-4 h-100">
+        <h6 class="text-uppercase text-secondary">Temas</h6>
+        <div class="display-6">{{ temas().length }}</div>
+        <small class="text-secondary">{{ temasBaneados() }} baneados</small>
+        <div class="mt-3">
+          <a class="cf-btn text-decoration-none" routerLink="/admin/temas">Moderar temas</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <div class="cf-panel p-4 h-100">
+        <h6 class="text-uppercase text-secondary">Comentarios</h6>
+        <div class="display-6">{{ comentarios().length }}</div>
+        <small class="text-secondary">{{ comentariosBaneados() }} baneados</small>
+        <div class="mt-3">
+          <a class="cf-btn text-decoration-none" routerLink="/admin/comentarios"
+            >Moderar comentarios</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <div class="cf-panel p-4 h-100">
+        <h6 class="text-uppercase text-secondary">Usuarios</h6>
+        <div class="display-6">{{ (usuarios$ | async)?.length ?? 0 }}</div>
+        <small class="text-secondary">registrados</small>
+        <div class="mt-3">
+          <a class="cf-btn text-decoration-none" routerLink="/admin/usuarios">Gestionar usuarios</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

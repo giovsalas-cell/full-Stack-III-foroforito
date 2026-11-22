@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/usuarios")
 @RequiredArgsConstructor
@@ -38,8 +39,14 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public UsuarioResponse actualizar(@PathVariable Long id, @Valid @RequestBody UsuarioRequest req) {
+    public UsuarioResponse actualizar(@PathVariable Long id, @Valid @RequestBody UsuarioActualizarRequest req) {
         return usuarioService.actualizar(id, req);
+    }
+
+    @PostMapping("/recuperar")
+    public ResponseEntity<Void> recuperar(@Valid @RequestBody RecuperarRequest req) {
+        usuarioService.recuperar(req.correo());
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

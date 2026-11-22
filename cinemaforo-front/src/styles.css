@@ -195,3 +195,18 @@ body {
   background: #ff6b81;
   color: #fff;
 }
+/* Botones pequeños para tablas */
+.cf-btn.cf-btn-sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Variante roja para acciones destructivas (banear, eliminar) */
+.cf-btn.cf-btn-peligro {
+  background: #c8283c;
+  color: #fff;
+}
+.cf-btn.cf-btn-peligro:hover {
+  background: #e03248;
+}
