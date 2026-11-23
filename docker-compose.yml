@@ -1,0 +1,46 @@
+x-conexion-oracle: &conexion-oracle
+  SPRING_DATASOURCE_URL: jdbc:oracle:thin:@fullstackiiisumativa_high?TNS_ADMIN=/wallet
+  SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
+  SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
+
+services:
+  usuarios:
+    build: ./demo
+    image: cinemaforo-usuarios
+    container_name: cf-usuarios
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./demo/Wallet_FullStackIIISumativa:/wallet
+    environment: *conexion-oracle
+
+  foro:
+    build: ./foroforito
+    image: cinemaforo-foro
+    container_name: cf-foro
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./foroforito/Wallet_FullStackIIISumativa:/wallet
+    environment: *conexion-oracle
+
+  admin:
+    build: ./ms-admin
+    image: cinemaforo-admin
+    container_name: cf-admin
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./ms-admin/Wallet_FullStackIIISumativa:/wallet
+    environment: *conexion-oracle
+  front:
+    build: ./cinemaforo-front
+    image: cinemaforo-front
+    container_name: cf-front
+    ports:
+      - "4200:80"
+    depends_on:
+      - usuarios
+      - foro
+      - admin

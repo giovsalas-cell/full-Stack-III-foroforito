@@ -1,3 +1,4 @@
 Wallet_*/
 target/
 .vscode/
+.env
