@@ -26,8 +26,13 @@ public class UsuarioService {
         if (usuarioRepository.existsByCorreo(req.correo())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un usuario con ese correo");
         }
-        Usuario u = new Usuario();
-        aplicarDatos(u, req);
+        // Patrón de diseño Builder: el usuario se construye paso a paso y de forma legible
+        Usuario u = Usuario.builder()
+                .nombre(req.nombre())
+                .correo(req.correo())
+                .contrasena(req.contrasena())
+                .rol(buscarRol(req.idRol()))
+                .build();
         Usuario guardado = usuarioRepository.save(u);
         log.info("Usuario creado con id {}", guardado.getIdUsuario());
         return aResponse(guardado);
@@ -48,7 +53,10 @@ public class UsuarioService {
 
     public UsuarioResponse actualizar(Long id, UsuarioRequest req) {
         Usuario u = obtener(id);
-        aplicarDatos(u, req);
+        u.setNombre(req.nombre());
+        u.setCorreo(req.correo());
+        u.setContrasena(req.contrasena());
+        u.setRol(buscarRol(req.idRol()));
         return aResponse(usuarioRepository.save(u));
     }
 
@@ -71,13 +79,9 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
     }
 
-    private void aplicarDatos(Usuario u, UsuarioRequest req) {
-        Rol rol = rolRepository.findById(req.idRol())
+    private Rol buscarRol(Long idRol) {
+        return rolRepository.findById(idRol)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El rol indicado no existe"));
-        u.setNombre(req.nombre());
-        u.setCorreo(req.correo());
-        u.setContrasena(req.contrasena());
-        u.setRol(rol);
     }
 
     private UsuarioResponse aResponse(Usuario u) {
